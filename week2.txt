@@ -1,0 +1,54 @@
+class Node {
+	public int data;
+	public Node prev;
+	public Node next;
+
+	public Node(int data) {
+		this.data = data;
+		this.prev = null;
+		this.next = null;
+	}
+}
+
+public class Main {
+	public static void insert(Node[] head_ref, int data) {
+		Node new_node = new Node(data);
+
+		new_node.next = head_ref[0];
+		new_node.prev = null;
+
+		if (head_ref[0] != null) {
+			head_ref[0].prev = new_node;
+		}
+
+		head_ref[0] = new_node;
+	}
+
+
+	public static void printList(Node head) {
+		Node curr = head;
+
+		System.out.println("Following are the nodes of Linked List: ");
+
+		while (curr != null) {
+			// print current node
+			System.out.print(curr.data + " ");
+
+			// move to the next node
+			curr = curr.next;
+		}
+	}
+
+	public static void main(String[] args) {
+		/* Create the following Doubly Linked List
+		head-->40<-->30<-->20<-->10 */
+		Node[] head = new Node[1];
+		insert(head, 10);
+		insert(head, 20);
+		insert(head, 30);
+		insert(head, 40);
+
+		// print the created list
+		printList(head[0]);
+	}
+}

@@ -1,0 +1,168 @@
+import java.util.Scanner;
+import java.util.Random;
+
+class SkipListNode {
+    int value;
+    SkipListNode[] forward;
+
+    public SkipListNode(int value, int level) {
+        this.value = value;
+        forward = new SkipListNode[level + 1];
+    }
+}
+
+class SkipList {
+    private static final int MAX_LEVEL = 6; // Maximum level for the skip list
+    private static final double PROBABILITY = 0.5; // Probability for node to be at higher level
+    private SkipListNode head;
+    int level;
+
+    public SkipList() {
+        head = new SkipListNode(Integer.MIN_VALUE, MAX_LEVEL);
+        level = 0;
+    }
+
+    // Generate random level for a node
+    private int randomLevel() {
+        int lvl = 0;
+        Random rand = new Random();
+        while (lvl < MAX_LEVEL && rand.nextDouble() < PROBABILITY) {
+            lvl++;
+        }
+        return lvl;
+    }
+
+    // Insert a value into the skip list
+    public void insert(int value) {
+        SkipListNode[] update = new SkipListNode[MAX_LEVEL + 1];
+        SkipListNode current = head;
+
+        for (int i = level; i >= 0; i--) {
+            while (current.forward[i] != null && current.forward[i].value < value) {
+                current = current.forward[i];
+            }
+            update[i] = current;
+        }
+
+        current = current.forward[0];
+
+        if (current == null || current.value != value) {
+            int newLevel = randomLevel();
+            if (newLevel > level) {
+                for (int i = level + 1; i <= newLevel; i++) {
+                    update[i] = head;
+                }
+                level = newLevel;
+            }
+            SkipListNode newNode = new SkipListNode(value, newLevel);
+            for (int i = 0; i <= newLevel; i++) {
+                newNode.forward[i] = update[i].forward[i];
+                update[i].forward[i] = newNode;
+            }
+        }
+    }
+
+    // Delete a value from the skip list
+    public void delete(int value) {
+        SkipListNode[] update = new SkipListNode[MAX_LEVEL + 1];
+        SkipListNode current = head;
+
+        for (int i = level; i >= 0; i--) {
+            while (current.forward[i] != null && current.forward[i].value < value) {
+                current = current.forward[i];
+            }
+            update[i] = current;
+        }
+
+        current = current.forward[0];
+
+        if (current != null && current.value == value) {
+            for (int i = 0; i <= level; i++) {
+                if (update[i].forward[i] != current)
+                    break;
+                update[i].forward[i] = current.forward[i];
+            }
+
+            while (level > 0 && head.forward[level] == null) {
+                level--;
+            }
+        }
+    }
+
+    // Search for a value in the skip list
+    public boolean search(int value) {
+        SkipListNode current = head;
+        for (int i = level; i >= 0; i--) {
+            while (current.forward[i] != null && current.forward[i].value < value) {
+                current = current.forward[i];
+            }
+        }
+        current = current.forward[0];
+        return current != null && current.value == value;
+    }
+
+    // Print the skip list
+    public void printSkipList() {
+        for (int i = level; i >= 0; i--) {
+            SkipListNode current = head;
+            while (current.forward[i] != null) {
+                System.out.print(current.forward[i].value + " ");
+                current = current.forward[i];
+            }
+            System.out.println();
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        SkipList skipList = new SkipList();
+        Scanner scanner = new Scanner(System.in);
+        char ch;
+
+        do {
+            System.out.println("\nSkip List Operations");
+            System.out.println("1. Insert");
+            System.out.println("2. Delete");
+            System.out.println("3. Search");
+            System.out.println("4. Exit");
+            System.out.println("Enter your choice:");
+
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter integer element to insert:");
+                    int insertValue = scanner.nextInt();
+                    skipList.insert(insertValue);
+                    break;
+                case 2:
+                    System.out.println("Enter integer element to delete:");
+                    int deleteValue = scanner.nextInt();
+                    skipList.delete(deleteValue);
+                    break;
+                case 3:
+                    System.out.println("Enter integer element to search:");
+                    int searchValue = scanner.nextInt();
+                    boolean found = skipList.search(searchValue);
+                    if (found)
+                        System.out.println("Element found in the Skip List.");
+                    else
+                        System.out.println("Element not found in the Skip List.");
+                    break;
+                case 4:
+                    System.out.println("Exiting program...");
+                    return;
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+            System.out.println("\nSkip List after operation:");
+            skipList.printSkipList();
+
+            System.out.println("\nDo you want to continue (y/n)?");
+            ch = scanner.next().charAt(0);
+        } while (ch == 'y' || ch == 'Y');
+
+        scanner.close();
+    }
+}
