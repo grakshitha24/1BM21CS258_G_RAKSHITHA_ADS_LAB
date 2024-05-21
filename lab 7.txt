@@ -1,0 +1,390 @@
+import java.util.Scanner;
+
+class Node {
+    int key;
+    int degree;
+    Node parent;
+    Node child;
+    Node sibling;
+
+    public Node(int key) {
+        this.key = key;
+        this.degree = 0;
+        this.parent = null;
+        this.child = null;
+        this.sibling = null;
+    }
+}
+
+public class BinomialHeap {
+    private Node head;
+
+    // Function to merge two binomial trees of the same degree
+    private Node mergeTrees(Node tree1, Node tree2) {
+        if (tree1.key <= tree2.key) {
+            tree2.sibling = tree1.child;
+            tree1.child = tree2;
+            tree1.degree++;
+            return tree1;
+        } else {
+            tree1.sibling = tree2.child;
+            tree2.child = tree1;
+            tree2.degree++;
+            return tree2;
+        }
+    }
+
+    // Function to merge two binomial heaps
+    private Node mergeHeaps(Node heap1, Node heap2) {
+        if (heap1 == null)
+            return heap2;
+        else if (heap2 == null)
+            return heap1;
+        else {
+            Node mergedHeapHead = null;
+            Node tail = null;
+            Node h1 = heap1;
+            Node h2 = heap2;
+
+            while (h1 != null && h2 != null) {
+                Node next1 = h1.sibling;
+                Node next2 = h2.sibling;
+
+                if (h1.degree <= h2.degree) {
+                    if (mergedHeapHead == null) {
+                        mergedHeapHead = h1;
+                        tail = h1;
+                    } else {
+                        tail.sibling = h1;
+                        tail = h1;
+                    }
+                    h1 = next1;
+                } else {
+                    if (mergedHeapHead == null) {
+                        mergedHeapHead = h2;
+                        tail = h2;
+                    } else {
+                        tail.sibling = h2;
+                        tail = h2;
+                    }
+                    h2 = next2;
+                }
+            }
+
+            while (h1 != null) {
+                tail.sibling = h1;
+                tail = h1;
+                h1 = h1.sibling;
+            }
+
+            while (h2 != null) {
+                tail.sibling = h2;
+                tail = h2;
+                h2 = h2.sibling;
+            }
+
+            return mergedHeapHead;
+        }
+    }
+
+    // Function to insert a key into the binomial heap
+    public void insert(int key) {
+        if (head == null) {
+            head = new Node(key);
+        } else {
+            BinomialHeap newHeap = new BinomialHeap();
+            newHeap.head = new Node(key);
+            head = mergeHeaps(head, newHeap.head);
+        }
+    }
+
+    // Function to get the minimum key in the binomial heap
+    public int getMin() {
+        if (head == null)
+            return Integer.MIN_VALUE;
+
+        int minKey = head.key;
+        Node currentNode = head.sibling;
+
+        while (currentNode != null) {
+            if (currentNode.key < minKey)
+                minKey = currentNode.key;
+            currentNode = currentNode.sibling;
+        }
+
+        return minKey;
+    }
+
+    // Function to extract the minimum key from the binomial heap
+    public int extractMin() {
+        if (head == null)
+            return Integer.MIN_VALUE;
+
+        Node prev = null;
+        Node prevMin = null;
+        Node minNode = head;
+        Node currentNode = head.sibling;
+
+        while (currentNode != null) {
+            if (currentNode.key < minNode.key) {
+                minNode = currentNode;
+                prevMin = prev;
+            }
+            prev = currentNode;
+            currentNode = currentNode.sibling;
+        }
+
+        if (prevMin == null)
+            head = minNode.sibling;
+        else
+            prevMin.sibling = minNode.sibling;
+
+        BinomialHeap newHeap = new BinomialHeap();
+        newHeap.head = minNode.child;
+        head = mergeHeaps(head, newHeap.head);
+
+        return minNode.key;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        BinomialHeap heap = new BinomialHeap();
+
+        System.out.println("Enter the number of elements to insert: ");
+        int n = scanner.nextInt();
+        System.out.println("Enter the elements: ");
+        for (int i = 0; i < n; i++) {
+            int key = scanner.nextInt();
+            heap.insert(key);
+        }
+
+        System.out.println("Minimum key: " + heap.getMin());
+        System.out.println("Extracted minimum key: " + heap.extractMin());
+        System.out.println("Minimum key after extraction: " + heap.getMin());
+        
+        scanner.close();
+    }
+}
+
+
+
+
+
+
+
+import java.util.Scanner;
+
+class Node {
+    int key;
+    int degree;
+    Node parent;
+    Node child;
+    Node sibling;
+
+    public Node(int key) {
+        this.key = key;
+        this.degree = 0;
+        this.parent = null;
+        this.child = null;
+        this.sibling = null;
+    }
+}
+
+public class BinomialHeap {
+    private Node head;
+
+    // Function to merge two binomial trees of the same degree
+    private Node mergeTrees(Node tree1, Node tree2) {
+        if (tree1.key <= tree2.key) {
+            tree2.sibling = tree1.child;
+            tree1.child = tree2;
+            tree1.degree++;
+            return tree1;
+        } else {
+            tree1.sibling = tree2.child;
+            tree2.child = tree1;
+            tree2.degree++;
+            return tree2;
+        }
+    }
+
+    // Function to merge two binomial heaps
+    private Node mergeHeaps(Node heap1, Node heap2) {
+        if (heap1 == null)
+            return heap2;
+        else if (heap2 == null)
+            return heap1;
+        else {
+            Node mergedHeapHead = null;
+            Node tail = null;
+            Node h1 = heap1;
+            Node h2 = heap2;
+
+            while (h1 != null && h2 != null) {
+                Node next1 = h1.sibling;
+                Node next2 = h2.sibling;
+
+                if (h1.degree <= h2.degree) {
+                    if (mergedHeapHead == null) {
+                        mergedHeapHead = h1;
+                        tail = h1;
+                    } else {
+                        tail.sibling = h1;
+                        tail = h1;
+                    }
+                    h1 = next1;
+                } else {
+                    if (mergedHeapHead == null) {
+                        mergedHeapHead = h2;
+                        tail = h2;
+                    } else {
+                        tail.sibling = h2;
+                        tail = h2;
+                    }
+                    h2 = next2;
+                }
+            }
+
+            while (h1 != null) {
+                tail.sibling = h1;
+                tail = h1;
+                h1 = h1.sibling;
+            }
+
+            while (h2 != null) {
+                tail.sibling = h2;
+                tail = h2;
+                h2 = h2.sibling;
+            }
+
+            return mergedHeapHead;
+        }
+    }
+
+    // Function to insert a key into the binomial heap
+    public void insert(int key) {
+        if (head == null) {
+            head = new Node(key);
+        } else {
+            BinomialHeap newHeap = new BinomialHeap();
+            newHeap.head = new Node(key);
+            head = mergeHeaps(head, newHeap.head);
+        }
+    }
+
+    // Function to decrease the key of a node in the binomial heap
+    public void decreaseKey(Node node, int newKey) {
+        if (newKey > node.key) {
+            System.out.println("New key is greater than the current key.");
+            return;
+        }
+
+        node.key = newKey;
+        Node parent = node.parent;
+        while (parent != null && node.key < parent.key) {
+            // Swap keys
+            int temp = node.key;
+            node.key = parent.key;
+            parent.key = temp;
+            node = parent;
+            parent = node.parent;
+        }
+    }
+
+    // Function to delete a node from the binomial heap
+    public void delete(Node node) {
+        decreaseKey(node, Integer.MIN_VALUE);
+        extractMin();
+    }
+
+    // Function to get the minimum key in the binomial heap
+    public int getMin() {
+        if (head == null)
+            return Integer.MIN_VALUE;
+
+        int minKey = head.key;
+        Node currentNode = head.sibling;
+
+        while (currentNode != null) {
+            if (currentNode.key < minKey)
+                minKey = currentNode.key;
+            currentNode = currentNode.sibling;
+        }
+
+        return minKey;
+    }
+
+    // Function to extract the minimum key from the binomial heap
+    public int extractMin() {
+        if (head == null)
+            return Integer.MIN_VALUE;
+
+        Node prev = null;
+        Node prevMin = null;
+        Node minNode = head;
+        Node currentNode = head.sibling;
+
+        while (currentNode != null) {
+            if (currentNode.key < minNode.key) {
+                minNode = currentNode;
+                prevMin = prev;
+            }
+            prev = currentNode;
+            currentNode = currentNode.sibling;
+        }
+
+        if (prevMin == null)
+            head = minNode.sibling;
+        else
+            prevMin.sibling = minNode.sibling;
+
+        BinomialHeap newHeap = new BinomialHeap();
+        newHeap.head = minNode.child;
+        head = mergeHeaps(head, newHeap.head);
+
+        return minNode.key;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        BinomialHeap heap = new BinomialHeap();
+
+        System.out.println("Enter the number of elements to insert: ");
+        int n = scanner.nextInt();
+        System.out.println("Enter the elements: ");
+        for (int i = 0; i < n; i++) {
+            int key = scanner.nextInt();
+            heap.insert(key);
+        }
+
+        System.out.println("Minimum key: " + heap.getMin());
+        
+        // Example of decreaseKey and delete operations
+        System.out.println("Enter the index of the node to decrease its key: ");
+        int index = scanner.nextInt();
+        Node[] nodes = new Node[n];
+        Node current = heap.head;
+        for (int i = 0; i < n; i++) {
+            nodes[i] = current;
+            current = current.sibling;
+        }
+        if (index >= 0 && index < n) {
+            System.out.println("Enter the new key: ");
+            int newKey = scanner.nextInt();
+            heap.decreaseKey(nodes[index], newKey);
+            System.out.println("Minimum key after decreaseKey: " + heap.getMin());
+            System.out.println("Enter the index of the node to delete: ");
+            index = scanner.nextInt();
+            if (index >= 0 && index < n) {
+                heap.delete(nodes[index]);
+                System.out.println("Minimum key after delete: " + heap.getMin());
+            } else {
+                System.out.println("Invalid index.");
+            }
+        } else {
+            System.out.println("Invalid index.");
+        }
+
+        scanner.close();
+    }
+}
